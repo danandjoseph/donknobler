@@ -160,7 +160,7 @@
 
   /* property cards */
   .prop-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px}
-  .prop-card{
+  .prop-card{cursor:pointer;
     border:1px solid var(--border); border-radius:var(--radius); background:var(--surface);
     overflow:hidden; display:flex; flex-direction:column;
     transition:transform .15s ease, border-color .15s ease;
@@ -247,7 +247,7 @@
   <div class="wrap header-row">
     <a class="brand" href="#top" aria-label="Don Knobler and Company home">
       <svg width="40" height="30" viewBox="0 0 40 30" aria-hidden="true">
-        <polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon>
+        <polygon points="20,2 20,28 2,15" fill="#f3efe2"></polygon>
         <polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon>
       </svg>
       <span class="brand-text">
@@ -328,7 +328,7 @@
           <option>Royal Orleans &ndash; 4405 McKinney Ave</option>
           <option>Pecan Park &ndash; 5611 Ross Ave</option>
           <option>The Parkview &ndash; 3100 Elizabeth St</option>
-          <option>Rawlings Square &ndash; 3909 Rawlings</option>
+          <option>Rawlins Square &ndash; 3909 Rawlins</option>
         </select>
       </div>
       <div class="field">
@@ -361,7 +361,6 @@
           <p class="hero-sub">A family-run leasing office at the corner of Cole Ave and Travis &mdash; thirty years of placing tenants in well-kept, well-located buildings across Knox&ndash;Henderson, Uptown and the surrounding corridors.</p>
           <div class="hero-ctas">
             <a class="cta" href="https://linktr.ee/donknobler" target="_blank" rel="noopener">View Current Availability</a>
-            <a class="cta ghost" href="#properties">Browse All Properties</a>
           </div>
         </div>
         <div class="hero-card">
@@ -379,7 +378,7 @@
       <div class="section-head">
         <div>
           <p class="eyebrow">Our Properties</p>
-          <h2>Twenty-three buildings, five corridors</h2>
+          <h2>Buildings across five corridors</h2>
         </div>
         <p class="muted" style="max-width:34ch">Every building sits within a few blocks of Knox&ndash;Henderson or Uptown. Filter by corridor, then check the availability list for open units.</p>
       </div>
@@ -470,7 +469,7 @@
           <div class="prop-body"><h3>5010 Bowser Ave</h3><p class="prop-tag">Bowser Ave corridor</p></div>
         </article>
 
-        <!-- McKinney / Ross / Elizabeth / Rawlings -->
+        <!-- McKinney / Ross / Elizabeth / Rawlins -->
         <article class="prop-card" data-corridor="Uptown">
           <div class="prop-photo"><img src="images/prop-royal-orleans.jpg" alt="Royal Orleans apartment building on McKinney Ave" loading="lazy"></div>
           <div class="prop-body"><h3>Royal Orleans</h3><p class="prop-tag">4405 McKinney Ave</p></div>
@@ -484,16 +483,8 @@
           <div class="prop-body"><h3>The Parkview</h3><p class="prop-tag">3100 Elizabeth St</p></div>
         </article>
         <article class="prop-card" data-corridor="Uptown">
-          <div class="prop-photo"><img src="images/prop-rawlings-square.jpg" alt="Rawlings Square apartment building on Rawlings" loading="lazy"></div>
-          <div class="prop-body"><h3>Rawlings Square</h3><p class="prop-tag">3909 Rawlings</p></div>
-        </article>
-        <article class="prop-card" data-corridor="Uptown">
-          <div class="prop-photo"><img src="images/3905-rawlins-st.jpg" alt="3905 Rawlins St building" loading="lazy"></div>
-          <div class="prop-body"><h3>3905 Rawlins St</h3><p class="prop-tag">Rawlins St</p></div>
-        </article>
-        <article class="prop-card" data-corridor="Uptown">
-          <div class="prop-photo"><img src="images/4105-mckinney-ave.jpg" alt="4105 McKinney Ave building" loading="lazy"></div>
-          <div class="prop-body"><h3>4105 McKinney Ave</h3><p class="prop-tag">McKinney Ave corridor</p></div>
+          <div class="prop-photo"><img src="images/prop-rawlings-square.jpg" alt="Rawlins Square apartment building on Rawlins" loading="lazy"></div>
+          <div class="prop-body"><h3>Rawlins Square</h3><p class="prop-tag">3909 Rawlins</p></div>
         </article>
       </div>
 
@@ -614,12 +605,22 @@
   var closeBtn = document.getElementById('contact-close');
   var form = document.getElementById('contact-form');
 
-  function openContact(){
+  function openContact(propertyLabel){
     dlg.classList.remove('sent');
     form.reset();
+    if (propertyLabel) {
+      var propSelect = document.getElementById('cf-property');
+      var hasOption = Array.prototype.some.call(propSelect.options, function(o){ return o.value === propertyLabel; });
+      if (!hasOption) {
+        var opt = document.createElement('option');
+        opt.textContent = propertyLabel;
+        propSelect.appendChild(opt);
+      }
+      propSelect.value = propertyLabel;
+    }
     dlg.showModal();
   }
-  openBtn.addEventListener('click', openContact);
+  openBtn.addEventListener('click', function(){ openContact(); });
   document.getElementById('nav-message').addEventListener('click', function(e){
     e.preventDefault();
     openContact();
@@ -633,6 +634,28 @@
     var r = dlg.getBoundingClientRect();
     var inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
     if (!inside) dlg.close();
+  });
+
+  // Property cards open the inquiry form pre-filled with that property
+  function propertyLabel(card){
+    var h3 = card.querySelector('h3');
+    if (!h3) return '';
+    var name = h3.textContent.trim();
+    var tagEl = card.querySelector('.prop-tag');
+    var tag = tagEl ? tagEl.textContent.trim() : '';
+    var generic = !tag || /corridor$/i.test(tag) || tag === 'Design District';
+    return generic ? name : (name + ' – ' + tag);
+  }
+  document.querySelectorAll('.prop-card').forEach(function(card){
+    var label = propertyLabel(card);
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', 'Inquire about ' + label);
+    function activate(){ openContact(label); }
+    card.addEventListener('click', activate);
+    card.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+    });
   });
 
   form.addEventListener('submit', function(e){
