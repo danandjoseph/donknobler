@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<title>Don Knobler &amp; Company</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: sticky chevron header over a full-bleed navy skyline hero, diagonal
+     band hands off to a warm paper body; properties grouped into real corridors
+     with filterable chips; About/Office content lives inline, not in modals. */
+  :root{
+    --bg:#f6f3ec;
+    --surface:#ffffff;
+    --fg:#1a1d27;
+    --fg-muted:#625d4d;
+    --accent:#a9811c;
+    --accent-2:#c9a227;
+    --navy:#0f1529;
+    --navy-2:#182142;
+    --on-navy:#f3efe2;
+    --on-navy-muted:#b9bdd1;
+    --border:rgba(16,23,43,0.13);
+    --radius:2px;
+    --header-h:88px;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0c0f1b; --surface:#141a2e; --fg:#f1ede2; --fg-muted:#a9a594;
+      --accent:#dcb544; --accent-2:#dcb544; --navy:#070a14; --navy-2:#111833;
+      --on-navy:#f3efe2; --on-navy-muted:#9ea3bd; --border:rgba(255,255,255,0.14);
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0c0f1b; --surface:#141a2e; --fg:#f1ede2; --fg-muted:#a9a594;
+    --accent:#dcb544; --accent-2:#dcb544; --navy:#070a14; --navy-2:#111833;
+    --on-navy:#f3efe2; --on-navy-muted:#9ea3bd; --border:rgba(255,255,255,0.14);
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family:'Libre Franklin',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    scroll-behavior:smooth;
+  }
+  @media (prefers-reduced-motion:reduce){ body{scroll-behavior:auto} }
+  h1,h2,h3{font-family:'Playfair Display',Georgia,serif; font-weight:600; margin:0; text-wrap:balance}
+  p{line-height:1.6; margin:0}
+  a{color:inherit}
+  img{max-width:100%; display:block}
+  .wrap{max-width:1180px; margin:0 auto; padding-left:max(20px,env(safe-area-inset-left,0px)); padding-right:max(20px,env(safe-area-inset-right,0px))}
+  .eyebrow{font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--accent)}
+  section{scroll-margin-top:var(--header-h)}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+
+  /* header */
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--navy)}
+  header{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
+    background:rgba(15,21,41,.92); backdrop-filter:blur(10px) saturate(130%);
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .header-row{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    min-height:var(--header-h); padding-block:10px;
+  }
+  .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--on-navy); min-width:0}
+  .brand svg{flex:none}
+  .brand-text{font-family:'Playfair Display',serif; line-height:1.15; min-width:0}
+  .brand-text .l1{display:block; font-size:clamp(17px,2.4vw,22px); font-weight:700; white-space:nowrap}
+  .brand-text .l2{display:block; font-size:clamp(12px,1.6vw,15px); color:var(--on-navy-muted); white-space:nowrap}
+  nav.primary{display:flex; align-items:center; gap:28px}
+  nav.primary a{
+    color:var(--on-navy-muted); text-decoration:none; font-size:14px; font-weight:600;
+    letter-spacing:.03em; padding:6px 2px; border-bottom:1px solid transparent;
+  }
+  nav.primary a:hover{color:var(--on-navy); border-color:var(--accent-2)}
+  .cta{
+    display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
+    background:var(--accent-2); color:#1b1506; text-decoration:none;
+    font-weight:700; font-size:13px; letter-spacing:.03em;
+    padding:11px 18px; border-radius:var(--radius);
+    border:1px solid var(--accent-2);
+  }
+  .cta:hover{background:#e3c25e; border-color:#e3c25e}
+  .cta.ghost{background:transparent; color:var(--on-navy); border-color:rgba(255,255,255,.35)}
+  .cta.ghost:hover{border-color:var(--accent-2); color:var(--accent-2)}
+  .menu-btn{display:none; background:none; border:1px solid rgba(255,255,255,.3); color:var(--on-navy); width:40px; height:40px; border-radius:var(--radius); align-items:center; justify-content:center}
+  #nav-toggle{display:none}
+  #nav-message{display:none}
+  .header-icons{display:flex; align-items:center; gap:10px; flex:none}
+  .icon-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:40px; height:40px; flex:none; border-radius:var(--radius);
+    background:none; border:1px solid rgba(255,255,255,.3); color:var(--on-navy);
+    cursor:pointer; text-decoration:none;
+  }
+  .icon-btn:hover{border-color:var(--accent-2); color:var(--accent-2)}
+  .icon-btn svg{width:18px; height:18px}
+
+  @media (max-width:860px){
+    nav.primary{
+      position:absolute; left:0; right:0; top:100%;
+      flex-direction:column; align-items:stretch; gap:0;
+      background:var(--navy); border-bottom:1px solid rgba(255,255,255,.08);
+      max-height:0; overflow:hidden; transition:max-height .25s ease;
+    }
+    nav.primary a{padding:14px max(20px,env(safe-area-inset-left,0px)); border-bottom:1px solid rgba(255,255,255,.08)}
+    #nav-message{display:block}
+    #nav-toggle:checked ~ nav.primary{max-height:460px}
+    .menu-btn{display:inline-flex}
+    header{position:sticky}
+    .cta.header-cta{display:none}
+  }
+
+  /* hero */
+  .hero{position:relative; background:var(--navy); color:var(--on-navy); overflow:hidden}
+  .hero-video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+  .hero-sky{position:absolute; inset:0; background:
+      radial-gradient(900px 500px at 82% -10%, rgba(220,181,68,.14), transparent 60%),
+      linear-gradient(180deg, rgba(10,14,28,.78) 0%, rgba(15,21,41,.66) 55%, rgba(10,14,28,.88) 100%);
+  }
+  .hero-inner{position:relative; padding-block:clamp(56px,10vw,104px) clamp(90px,14vw,130px)}
+  .hero-grid{display:grid; grid-template-columns:1.3fr .7fr; gap:48px; align-items:end}
+  @media (max-width:760px){ .hero-grid{grid-template-columns:1fr} }
+  .hero h1{font-size:clamp(32px,5vw,54px); line-height:1.08; max-width:14ch}
+  .hero h1 em{font-style:normal; color:var(--accent-2)}
+  .hero-sub{margin-top:18px; max-width:46ch; color:var(--on-navy-muted); font-size:17px}
+  .hero-ctas{display:flex; flex-wrap:wrap; gap:14px; margin-top:30px}
+  .hero-card{
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14);
+    border-radius:var(--radius); padding:22px; backdrop-filter:blur(6px);
+  }
+  .hero-card .eyebrow{color:var(--accent-2)}
+  .hero-card p{color:var(--on-navy-muted); font-size:14px; margin-top:10px}
+  .hero-card .addr{margin-top:14px; font-size:14px; color:var(--on-navy)}
+  .band{height:30px; background:var(--bg);
+    clip-path:polygon(0 100%,100% 0,100% 100%);
+  }
+
+  /* section headers */
+  .section-head{display:flex; align-items:end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:28px}
+  .section-head h2{font-size:clamp(26px,3.6vw,36px)}
+  .section-pad{padding-block:clamp(48px,7vw,84px)}
+  .muted{color:var(--fg-muted)}
+
+  /* filters */
+  .filters{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:28px}
+  .filter{
+    font:inherit; font-size:13px; font-weight:600; letter-spacing:.02em;
+    padding:9px 16px; border-radius:999px; border:1px solid var(--border);
+    background:var(--surface); color:var(--fg-muted); cursor:pointer;
+  }
+  .filter:hover{border-color:var(--accent)}
+  .filter[aria-pressed="true"]{background:var(--navy); border-color:var(--navy); color:var(--on-navy)}
+
+  /* property cards */
+  .prop-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px}
+  .prop-card{
+    border:1px solid var(--border); border-radius:var(--radius); background:var(--surface);
+    overflow:hidden; display:flex; flex-direction:column;
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  .prop-card:hover{transform:translateY(-3px); border-color:var(--accent)}
+  .prop-photo{aspect-ratio:4/3; overflow:hidden; background:var(--navy-2)}
+  .prop-photo img{width:100%; height:100%; object-fit:cover; display:block}
+  .prop-photo.placeholder{display:flex; align-items:center; justify-content:center}
+  .prop-photo.placeholder svg{width:34px; height:26px; opacity:.85}
+  .prop-body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:4px}
+  .prop-card h3{font-size:16px; font-weight:600; line-height:1.3}
+  .prop-tag{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--fg-muted)}
+  .prop-card[hidden]{display:none}
+
+  /* about */
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center}
+  @media (max-width:820px){ .about-grid{grid-template-columns:1fr} }
+  .about-photo{border-radius:var(--radius); overflow:hidden; border:1px solid var(--border)}
+  .about-photo img{width:100%; height:auto}
+  .pull{font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(19px,2.3vw,24px); color:var(--fg); border-left:3px solid var(--accent); padding-left:18px; margin-block:22px}
+  .snapshot{display:flex; gap:16px; align-items:center; margin-block:26px; padding:14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg)}
+  .snapshot img{width:72px; height:96px; object-fit:cover; border-radius:var(--radius); flex:none}
+  .snapshot p{font-size:13px; color:var(--fg-muted); font-style:italic}
+  .offer-list{list-style:none; margin:22px 0 0; padding:0; display:grid; gap:14px}
+  .offer-list li{display:flex; gap:12px; font-size:15px}
+  .offer-list b{display:block; font-size:14px}
+  .offer-list svg{flex:none; width:20px; height:20px; color:var(--accent); margin-top:2px}
+
+  /* office / contact */
+  .office{background:var(--navy); color:var(--on-navy)}
+  .office-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px}
+  @media (max-width:820px){ .office-grid{grid-template-columns:1fr} }
+  .office h2{color:var(--on-navy)}
+  .deets{list-style:none; margin:26px 0 0; padding:0; display:grid; gap:18px}
+  .deets li{display:flex; gap:14px; align-items:flex-start}
+  .deets svg{flex:none; width:20px; height:20px; color:var(--accent-2); margin-top:2px}
+  .deets b{display:block; font-size:13px; letter-spacing:.04em; text-transform:uppercase; color:var(--on-navy-muted); margin-bottom:3px}
+  .deets span, .deets a{font-size:15px; color:var(--on-navy); text-decoration:none}
+  .deets a:hover{color:var(--accent-2)}
+  .office-photo{border-radius:var(--radius); overflow:hidden; border:1px solid rgba(255,255,255,.14)}
+  .office-photo img{width:100%}
+
+  footer{padding-block:26px; border-top:1px solid var(--border)}
+  .foot-row{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; font-size:13px; color:var(--fg-muted)}
+
+  /* contact dialog */
+  dialog#contact{
+    border:none; border-radius:var(--radius); padding:0; background:var(--surface); color:var(--fg);
+    width:min(520px, calc(100vw - 32px)); max-height:min(640px, calc(100vh - 48px));
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+  }
+  dialog#contact::backdrop{background:rgba(10,14,28,.6); backdrop-filter:blur(2px)}
+  .dlg-head{
+    background:var(--navy); color:var(--on-navy); padding:22px 26px;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  }
+  .dlg-head h2{color:var(--on-navy); font-size:22px}
+  .dlg-head p{color:var(--on-navy-muted); font-size:13px; margin-top:6px}
+  .dlg-close{background:none; border:none; color:var(--on-navy-muted); cursor:pointer; padding:4px; line-height:1}
+  .dlg-close:hover{color:var(--accent-2)}
+  .dlg-close svg{width:18px; height:18px}
+  .dlg-body{padding:22px 26px 26px; overflow-y:auto}
+  .field{display:flex; flex-direction:column; gap:6px; margin-bottom:16px}
+  .field label{font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--fg-muted)}
+  .field input, .field select, .field textarea{
+    font:inherit; font-size:15px; padding:10px 12px; border-radius:var(--radius);
+    border:1px solid var(--border); background:var(--bg); color:var(--fg);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--accent); outline-offset:1px}
+  .field textarea{resize:vertical; min-height:88px}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  @media (max-width:480px){ .field-row{grid-template-columns:1fr} }
+  .dlg-submit{width:100%; justify-content:center; margin-top:4px; cursor:pointer}
+  .dlg-note{font-size:12px; color:var(--fg-muted); margin-top:12px}
+  .dlg-success{display:none; text-align:center; padding:12px 0 4px}
+  .dlg-success svg{width:40px; height:40px; color:var(--accent); margin:0 auto 14px}
+  .dlg-success h3{font-size:19px; margin-bottom:8px}
+  .dlg-success p{color:var(--fg-muted); font-size:14px}
+  dialog#contact.sent form{display:none}
+  dialog#contact.sent .dlg-success{display:block}
+</style>
+
+<header>
+  <div class="wrap header-row">
+    <a class="brand" href="#top" aria-label="Don Knobler and Company home">
+      <svg width="40" height="30" viewBox="0 0 40 30" aria-hidden="true">
+        <polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon>
+        <polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon>
+      </svg>
+      <span class="brand-text">
+        <span class="l1">Don Knobler</span>
+        <span class="l2">&amp; Company, Inc.</span>
+      </span>
+    </a>
+
+    <input type="checkbox" id="nav-toggle">
+
+    <nav class="primary">
+      <a href="#properties">Properties</a>
+      <a href="#commercial">Commercial</a>
+      <a href="#about">About</a>
+      <a href="#office">Office &amp; Hours</a>
+      <a href="#" id="nav-message">Message Us</a>
+      <a class="cta ghost" href="https://linktr.ee/donknobler" target="_blank" rel="noopener">Check Availability</a>
+    </nav>
+
+    <div class="header-icons">
+      <button type="button" class="icon-btn" id="contact-open" aria-label="Send us a message">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.5 6 8.5 7 8.5-7"/></svg>
+      </button>
+      <a class="icon-btn" href="https://instagram.com/donknoblerleasing" target="_blank" rel="noopener" aria-label="Don Knobler on Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1"/></svg>
+      </a>
+      <label class="menu-btn" for="nav-toggle" aria-label="Toggle navigation">
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 1h18M0 7h18M0 13h18"/></svg>
+      </label>
+    </div>
+  </div>
+</header>
+
+<dialog id="contact">
+  <div class="dlg-head">
+    <div>
+      <h2>Send us a message</h2>
+      <p>We typically reply within one business day.</p>
+    </div>
+    <button type="button" class="dlg-close" id="contact-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="dlg-body">
+    <form id="contact-form">
+      <div class="field-row">
+        <div class="field">
+          <label for="cf-name">Name</label>
+          <input type="text" id="cf-name" name="name" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="cf-phone">Phone</label>
+          <input type="tel" id="cf-phone" name="phone" autocomplete="tel">
+        </div>
+      </div>
+      <div class="field">
+        <label for="cf-email">Email</label>
+        <input type="email" id="cf-email" name="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="cf-property">Property of interest</label>
+        <select id="cf-property" name="property">
+          <option value="">Not sure yet</option>
+          <option>4311 Cole Ave</option>
+          <option>The Madras &ndash; 4220 Cole Ave</option>
+          <option>The Annex &ndash; 4224&ndash;4230 Cole Ave</option>
+          <option>4431 Travis St</option>
+          <option>4300 Travis St</option>
+          <option>4232&ndash;4234 Travis St</option>
+          <option>Travis Place &ndash; 4314 Travis St</option>
+          <option>Travis Elm &ndash; 4310 Travis St</option>
+          <option>4319 Buena Vista</option>
+          <option>The Villas &ndash; 3906&ndash;3910 Buena Vista</option>
+          <option>The Chase &ndash; 4411 Buena Vista</option>
+          <option>Avalon &ndash; 4331 Buena Vista</option>
+          <option>4432 Buena Vista</option>
+          <option>Vista Quarters &ndash; 4339 Buena Vista</option>
+          <option>Royal Orleans &ndash; 4405 McKinney Ave</option>
+          <option>Pecan Park &ndash; 5611 Ross Ave</option>
+          <option>The Parkview &ndash; 3100 Elizabeth St</option>
+          <option>Rawlings Square &ndash; 3909 Rawlings</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" required placeholder="Tell us what you're looking for&hellip;"></textarea>
+      </div>
+      <button type="submit" class="cta dlg-submit">Send Message</button>
+      <p class="dlg-note">This form isn't wired to send yet &mdash; connect it to a Cloudflare Worker/Pages Function at your mail endpoint.</p>
+    </form>
+    <div class="dlg-success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>
+      <h3>Message sent</h3>
+      <p>Thanks for reaching out &mdash; we'll be in touch soon.</p>
+    </div>
+  </div>
+</dialog>
+
+<main id="top">
+  <section class="hero">
+    <video class="hero-video" autoplay muted loop playsinline poster="images/bgvid-poster.png">
+      <source src="images/bgvid.mp4" type="video/mp4">
+    </video>
+    <div class="hero-sky"></div>
+
+    <div class="wrap hero-inner">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Central Dallas &middot; Since the 1990s</p>
+          <h1>Your partner for <em>Central Dallas</em> residential &amp; commercial leasing</h1>
+          <p class="hero-sub">A family-run leasing office at the corner of Cole Ave and Travis &mdash; thirty years of placing tenants in well-kept, well-located buildings across Knox&ndash;Henderson, Uptown and the surrounding corridors.</p>
+          <div class="hero-ctas">
+            <a class="cta" href="https://linktr.ee/donknobler" target="_blank" rel="noopener">View Current Availability</a>
+            <a class="cta ghost" href="#properties">Browse All Properties</a>
+          </div>
+        </div>
+        <div class="hero-card">
+          <p class="eyebrow">Office</p>
+          <p>Monday&ndash;Friday, 9 a.m.&ndash;5 p.m. Walk-ins welcome at our Central Expressway office.</p>
+          <p class="addr">4309 N. Central Expy, Dallas, TX 75205<br>214.559.0000</p>
+        </div>
+      </div>
+    </div>
+    <div class="band" aria-hidden="true"></div>
+  </section>
+
+  <section id="properties" class="section-pad">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Our Properties</p>
+          <h2>Twenty-three buildings, five corridors</h2>
+        </div>
+        <p class="muted" style="max-width:34ch">Every building sits within a few blocks of Knox&ndash;Henderson or Uptown. Filter by corridor, then check the availability list for open units.</p>
+      </div>
+
+      <div class="filters" id="filters">
+        <button class="filter" type="button" data-filter="all" aria-pressed="true">All properties</button>
+        <button class="filter" type="button" data-filter="Cole Ave" aria-pressed="false">Cole Ave</button>
+        <button class="filter" type="button" data-filter="Travis St" aria-pressed="false">Travis St</button>
+        <button class="filter" type="button" data-filter="Buena Vista" aria-pressed="false">Buena Vista</button>
+        <button class="filter" type="button" data-filter="Bowser Ave" aria-pressed="false">Bowser Ave</button>
+        <button class="filter" type="button" data-filter="Uptown" aria-pressed="false">McKinney, Ross &amp; Elizabeth</button>
+      </div>
+
+      <div class="prop-grid" id="prop-grid">
+        <!-- Cole Ave corridor -->
+        <article class="prop-card" data-corridor="Cole Ave">
+          <div class="prop-photo"><img src="images/prop-4311-cole.jpg" alt="4311 Cole Ave apartment building" loading="lazy"></div>
+          <div class="prop-body"><h3>4311 Cole Ave</h3><p class="prop-tag">Cole Ave corridor</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Cole Ave">
+          <div class="prop-photo"><img src="images/prop-the-madras.jpg" alt="The Madras apartment building on Cole Ave" loading="lazy"></div>
+          <div class="prop-body"><h3>The Madras</h3><p class="prop-tag">4220 Cole Ave</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Cole Ave">
+          <div class="prop-photo"><img src="images/prop-the-annex.jpg" alt="The Annex apartment building on Cole Ave" loading="lazy"></div>
+          <div class="prop-body"><h3>The Annex</h3><p class="prop-tag">4224&ndash;4230 Cole Ave</p></div>
+        </article>
+
+        <!-- Travis St corridor -->
+        <article class="prop-card" data-corridor="Travis St">
+          <div class="prop-photo"><img src="images/prop-4431-travis.jpg" alt="4431 Travis St apartment building" loading="lazy"></div>
+          <div class="prop-body"><h3>4431 Travis St</h3><p class="prop-tag">Travis St corridor</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Travis St">
+          <div class="prop-photo"><img src="images/prop-4300-travis.jpg" alt="4300 Travis St apartment building" loading="lazy"></div>
+          <div class="prop-body"><h3>4300 Travis St</h3><p class="prop-tag">Travis St corridor</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Travis St">
+          <div class="prop-photo"><img src="images/prop-4232-travis.jpg" alt="4232-4234 Travis St apartment building" loading="lazy"></div>
+          <div class="prop-body"><h3>4232&ndash;4234 Travis St</h3><p class="prop-tag">Travis St corridor</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Travis St">
+          <div class="prop-photo"><img src="images/prop-travis-place.jpg" alt="Travis Place apartment building" loading="lazy"></div>
+          <div class="prop-body"><h3>Travis Place</h3><p class="prop-tag">4314 Travis St</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Travis St">
+          <div class="prop-photo"><img src="images/prop-travis-elm.jpg" alt="Travis Elm apartment building" loading="lazy"></div>
+          <div class="prop-body"><h3>Travis Elm</h3><p class="prop-tag">4310 Travis St</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Travis St">
+          <div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div>
+          <div class="prop-body"><h3>4242 Travis St</h3><p class="prop-tag">Travis St corridor</p></div>
+        </article>
+
+        <!-- Buena Vista corridor -->
+        <article class="prop-card" data-corridor="Buena Vista">
+          <div class="prop-photo"><img src="images/prop-4319-buena-vista.jpg" alt="4319 Buena Vista apartment building" loading="lazy"></div>
+          <div class="prop-body"><h3>4319 Buena Vista</h3><p class="prop-tag">Buena Vista corridor</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Buena Vista">
+          <div class="prop-photo"><img src="images/prop-the-villas.jpg" alt="The Villas apartment building on Buena Vista" loading="lazy"></div>
+          <div class="prop-body"><h3>The Villas</h3><p class="prop-tag">3906&ndash;3910 Buena Vista</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Buena Vista">
+          <div class="prop-photo"><img src="images/prop-the-chase.jpg" alt="The Chase apartment building on Buena Vista" loading="lazy"></div>
+          <div class="prop-body"><h3>The Chase</h3><p class="prop-tag">4411 Buena Vista</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Buena Vista">
+          <div class="prop-photo"><img src="images/prop-avalon.jpg" alt="Avalon apartment building on Buena Vista" loading="lazy"></div>
+          <div class="prop-body"><h3>Avalon</h3><p class="prop-tag">4331 Buena Vista</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Buena Vista">
+          <div class="prop-photo"><img src="images/prop-4432-buena-vista.jpg" alt="4432 Buena Vista apartment building" loading="lazy"></div>
+          <div class="prop-body"><h3>4432 Buena Vista</h3><p class="prop-tag">Buena Vista corridor</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Buena Vista">
+          <div class="prop-photo"><img src="images/prop-vista-quarters.jpg" alt="Vista Quarters apartment building on Buena Vista" loading="lazy"></div>
+          <div class="prop-body"><h3>Vista Quarters</h3><p class="prop-tag">4339 Buena Vista</p></div>
+        </article>
+
+        <!-- Bowser Ave corridor -->
+        <article class="prop-card" data-corridor="Bowser Ave">
+          <div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div>
+          <div class="prop-body"><h3>5001 Bowser Ave</h3><p class="prop-tag">Bowser Ave corridor</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Bowser Ave">
+          <div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div>
+          <div class="prop-body"><h3>5010 Bowser Ave</h3><p class="prop-tag">Bowser Ave corridor</p></div>
+        </article>
+
+        <!-- McKinney / Ross / Elizabeth / Rawlings -->
+        <article class="prop-card" data-corridor="Uptown">
+          <div class="prop-photo"><img src="images/prop-royal-orleans.jpg" alt="Royal Orleans apartment building on McKinney Ave" loading="lazy"></div>
+          <div class="prop-body"><h3>Royal Orleans</h3><p class="prop-tag">4405 McKinney Ave</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Uptown">
+          <div class="prop-photo"><img src="images/prop-pecan-park.jpg" alt="Pecan Park apartment building on Ross Ave" loading="lazy"></div>
+          <div class="prop-body"><h3>Pecan Park</h3><p class="prop-tag">5611 Ross Ave</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Uptown">
+          <div class="prop-photo"><img src="images/prop-the-parkview.jpg" alt="The Parkview apartment building on Elizabeth St" loading="lazy"></div>
+          <div class="prop-body"><h3>The Parkview</h3><p class="prop-tag">3100 Elizabeth St</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Uptown">
+          <div class="prop-photo"><img src="images/prop-rawlings-square.jpg" alt="Rawlings Square apartment building on Rawlings" loading="lazy"></div>
+          <div class="prop-body"><h3>Rawlings Square</h3><p class="prop-tag">3909 Rawlings</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Uptown">
+          <div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div>
+          <div class="prop-body"><h3>3905 Rawlins St</h3><p class="prop-tag">Rawlins St</p></div>
+        </article>
+        <article class="prop-card" data-corridor="Uptown">
+          <div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div>
+          <div class="prop-body"><h3>4105 McKinney Ave</h3><p class="prop-tag">McKinney Ave corridor</p></div>
+        </article>
+      </div>
+
+      <p class="muted" style="margin-top:28px; font-size:14px">Unit-level availability lives on our <a href="https://linktr.ee/donknobler" target="_blank" rel="noopener" style="color:var(--accent); font-weight:600">availability list</a> &mdash; this grid is for browsing by location.</p>
+    </div>
+  </section>
+
+  <section id="commercial" class="section-pad" style="background:var(--surface); border-block:1px solid var(--border)">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Commercial Properties</p>
+          <h2>Eighteen spaces in the Dallas Design District</h2>
+        </div>
+        <p class="muted" style="max-width:34ch">Commercial and industrial leasing in Trinity Groves and the Design District, west of downtown along the river.</p>
+      </div>
+
+      <div class="prop-grid" id="commercial-grid">
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1315 Chemical St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>121 Express St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>156 Express St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>2300 Farrington St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>2531 Farrington St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>2533 Farrington St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1108 Levee St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1223 Levee St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1233 Levee St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1300 Levee St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1700 Levee St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>2033 Levee St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>101 Manufacturing St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1200 Manufacturing St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1204 Manufacturing St</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1100 N Riverfront Blvd</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1104 N Riverfront Blvd</h3><p class="prop-tag">Design District</p></div></article>
+        <article class="prop-card"><div class="prop-photo placeholder" aria-hidden="true"><svg viewBox="0 0 40 30"><polygon points="20,2 20,28 2,15" fill="#c9a227"></polygon><polygon points="38,2 38,28 20,15" fill="#f3efe2"></polygon></svg></div><div class="prop-body"><h3>1700 N Riverfront Blvd</h3><p class="prop-tag">Design District</p></div></article>
+      </div>
+
+      <p class="muted" style="margin-top:28px; font-size:14px">For leasing terms on any commercial space, reach out through our <a href="#" id="commercial-contact-open" style="color:var(--accent); font-weight:600">contact form</a> or call the office directly.</p>
+    </div>
+  </section>
+
+  <section id="about" class="section-pad" style="background:var(--surface); border-block:1px solid var(--border)">
+    <div class="wrap about-grid">
+      <div>
+        <div class="about-photo"><img src="images/office-sign.jpg" alt="Don Knobler &amp; Company sign on the Central Expressway office building" width="561" height="300"></div>
+      </div>
+      <div>
+        <p class="eyebrow">About Us</p>
+        <h2>A legacy of local expertise</h2>
+        <p style="margin-top:14px">Founded by respected real estate developer Donald G. Knobler, our company has been a steady presence in the Dallas rental market for over 30 years &mdash; built on honesty, accessibility and value-driven housing.</p>
+        <p class="pull">&ldquo;Great living starts with location, value, and a commitment to personal service.&rdquo;</p>
+        <div class="snapshot">
+          <img src="images/don-mavs.png" alt="Don courtside at a Dallas Mavericks game" loading="lazy">
+          <p>Don, courtside at a Mavericks game &mdash; the man whose thirty years in this neighborhood this company was built on.</p>
+        </div>
+        <ul class="offer-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-5.3-9.3-9.3C.8 8.1 2.4 4.5 6 4a5 5 0 0 1 6 2.2A5 5 0 0 1 18 4c3.6.5 5.2 4.1 3.3 7.7C19 15.7 12 21 12 21Z"/></svg><span><b>Prime locations</b>Close to major employers, universities and Dallas's entertainment districts.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 2 7l10 5 10-5-10-5ZM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span><b>Affordable pricing</b>The best value without compromising on location or essential amenities.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 20h5v-1a4 4 0 0 0-3-3.87M9 20H4v-1a4 4 0 0 1 3-3.87M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM15 11a4 4 0 1 0 0-8"/></svg><span><b>Hands-on management</b>Locally rooted and personal &mdash; service big corporations can't match.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="office" class="office section-pad">
+    <div class="wrap office-grid">
+      <div>
+        <p class="eyebrow" style="color:var(--accent-2)">Office &amp; Hours</p>
+        <h2>Come by, or reach us directly</h2>
+        <ul class="deets">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span><b>Hours</b><span>Monday&ndash;Friday, 9 a.m.&ndash;5 p.m.</span></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg><span><b>Office</b><span>4309 N. Central Expy, Dallas, TX 75205</span></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8 9.9a16 16 0 0 0 6 6l1.4-1.4a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.8 2Z"/></svg><span><b>Phone</b><a href="tel:+12145590000">214.559.0000</a></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="m3 6 9 7 9-7"/></svg><span><b>Email</b><a href="mailto:service@donknobler.com">service@donknobler.com</a></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16l-1 13H5L4 7ZM4 7l1-3h14l1 3"/></svg><span><b>Fax</b><span>214.559.2222</span></span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1"/></svg><span><b>Instagram</b><a href="https://instagram.com/donknoblerleasing" target="_blank" rel="noopener">@donknoblerleasing</a></span></li>
+        </ul>
+      </div>
+      <div class="office-photo">
+        <img src="images/office-flag.jpg" alt="American flag flying outside the Don Knobler and Company office on Central Expressway" width="561" height="561">
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-row">
+    <span>&copy; <span id="yr"></span> Don Knobler &amp; Company, Inc. &mdash; Dallas, Texas</span>
+    <span>Residential &amp; Commercial Leasing since the 1990's</span>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  var toggle = document.getElementById('nav-toggle');
+  document.querySelectorAll('nav.primary a').forEach(function(a){
+    a.addEventListener('click', function(){ toggle.checked = false; });
+  });
+
+  var filters = document.querySelectorAll('.filter');
+  var cards = document.querySelectorAll('#prop-grid .prop-card');
+  filters.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filters.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed','true');
+      var f = btn.getAttribute('data-filter');
+      cards.forEach(function(card){
+        card.hidden = !(f === 'all' || card.getAttribute('data-corridor') === f);
+      });
+    });
+  });
+
+  // Contact dialog
+  var dlg = document.getElementById('contact');
+  var openBtn = document.getElementById('contact-open');
+  var closeBtn = document.getElementById('contact-close');
+  var form = document.getElementById('contact-form');
+
+  function openContact(){
+    dlg.classList.remove('sent');
+    form.reset();
+    dlg.showModal();
+  }
+  openBtn.addEventListener('click', openContact);
+  document.getElementById('nav-message').addEventListener('click', function(e){
+    e.preventDefault();
+    openContact();
+  });
+  document.getElementById('commercial-contact-open').addEventListener('click', function(e){
+    e.preventDefault();
+    openContact();
+  });
+  closeBtn.addEventListener('click', function(){ dlg.close(); });
+  dlg.addEventListener('click', function(e){
+    var r = dlg.getBoundingClientRect();
+    var inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    if (!inside) dlg.close();
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    // TODO: once the Cloudflare Worker/Pages Function is live, replace this
+    // with a real submission, e.g.:
+    //   fetch('/api/contact', { method: 'POST', body: new FormData(form) })
+    //     .then(function(r){ if (r.ok) dlg.classList.add('sent'); });
+    dlg.classList.add('sent');
+  });
+</script>
